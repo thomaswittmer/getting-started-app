@@ -1,0 +1,57 @@
+services:
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    expose:
+      - "9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      sdi_apps:
+        ipv4_address: 172.24.0.22
+        
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: postgis
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_DB: ensgdb
+      POSTGRES_USER: ensgadmin
+      POSTGRES_PASSWORD: ensgpassword
+      ALLOW_IP_RANGE: 0.0.0.0/0
+      FORCE_SSL: "FALSE"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+    networks:
+      sdi_apps:
+        ipv4_address: 172.24.0.10
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ensg.eu
+      PGADMIN_DEFAULT_PASSWORD: ensgpassword
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    expose:
+      - "5050:80"
+    networks:
+      sdi_apps:
+        ipv4_address: 172.24.0.20
+
+volumes: 
+  portainer_data:
+  postgis_data:
+  pgadmin_data:
+
+networks:
+  sdi_apps:
+    #name: sdi_apps
+    external: true
+    
