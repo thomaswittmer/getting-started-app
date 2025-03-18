@@ -45,10 +45,42 @@ services:
       sdi_apps:
         ipv4_address: 172.24.0.20
 
+  geoserver:
+    image: kartoza/geoserver
+    container_name: geoserver
+    restart: always
+    environment:
+      - "CORS_ENABLED=true"
+      - GEOSERVER_ADMIN_PASSWORD=geoserver
+      - GEOSERVER_ADMIN_USER=admin
+      - INITIAL_MEMORY=500M
+      - MAXIMUM_MEMORY=1G
+      - GEOSERVER_DATA_DIR=/opt/geoserver/data_dir
+      - GEOWEBCACHE_CACHE_DIR=/opt/geoserver/data_dir/gwc
+      - ROOT_WEBAPP_REDIRECT=true
+      - TOMCAT_EXTRAS=false
+      - SAMPLE_DATA=false
+      # Extensions set to be installed
+      - "INSTALL_EXTENSIONS=true"
+      - STABLE_EXTENSIONS=css-plugin,importer-plugin,wmts-multi-dimensional-plugin
+      - COMMUNITY_EXTENSIONS=backup-restore-plugin,ogcapi-plugin,smart-data-loader-plugin,wmts-styles-plugin
+    expose:
+      - "8080"
+    volumes:
+      - geoserver_data:/opt/geoserver/data_dir
+      - geoserver_bal:/opt/geoserver/data_dir/_BAL_
+      - geoserver_settings:/settings
+    networks:
+      sdi_apps:
+        ipv4_address: 172.24.0.11
+
 volumes: 
   portainer_data:
   postgis_data:
   pgadmin_data:
+  geoserver_data:
+  geoserver_bal:
+  geoserver_settings:
 
 networks:
   sdi_apps:
